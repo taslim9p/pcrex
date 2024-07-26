@@ -1,0 +1,7 @@
+.sidebar{
+  /* background-color: aqua; */
+  z-index: 1000;
+  background:
+  linear-gradient(135deg,rgba(0, 0, 0, 0.1),rgba(76, 76, 75, 0.1));
+ transition: transform 2s ease-in-out;
+}
