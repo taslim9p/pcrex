@@ -53,7 +53,11 @@ const Orders = () => {
   });
 
   const calculateTotalPrice = (products) => {
-    return products.reduce((total, product) => total + product.price, 0);
+    return products.reduce((total, product) => total + product.price * product.quant, 0);
+  };
+
+  const calculateTotalQuantity = (products) => {
+    return products.reduce((total, product) => total + product.quant, 0);
   };
 
   return (
@@ -83,8 +87,8 @@ const Orders = () => {
                       <th className="px-4 py-2">Buyer</th>
                       <th className="px-4 py-2">Date</th>
                       <th className="px-4 py-2">Payment</th>
-                      <th className="px-4 py-2">Quantity</th>
-                      <th className="px-4 py-2">Total</th>
+                      <th className="px-4 py-2">Total Quantity</th>
+                      <th className="px-4 py-2">Total Amount</th>
                       <th className="px-4 py-2">Actions</th>
                     </tr>
                   </thead>
@@ -96,8 +100,8 @@ const Orders = () => {
                       <td className="px-4 py-2">
                         {moment(o?.createdAt).fromNow()}
                       </td>
-                      <td className="px-4 py-2">cash on delivery</td>
-                      <td className="px-4 py-2">{o?.products?.length}</td>
+                      <td className="px-4 py-2">Cash on delivery</td>
+                      <td className="px-4 py-2">{calculateTotalQuantity(o?.products)}</td>
                       <td className="px-4 py-2">
                         &#8377;{calculateTotalPrice(o?.products)}
                       </td>
@@ -130,6 +134,7 @@ const Orders = () => {
                           {p.description ? p.description.substring(0, 30) : "No description"}
                         </p>
                         <p className="text-sm">Price: &#8377;{p.price}</p>
+                        <p className="text-sm">Quantity: {p.quant}</p>
                       </div>
                     </div>
                   ))}

@@ -12,6 +12,7 @@ import {
   realtedProductController,
   searchProductController,
   updateProductController,
+  updateProductQuantity,
 } from "../controllers/productController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 import formidable from "express-formidable";
@@ -62,6 +63,8 @@ router.get("/related-product/:pid/:cid", realtedProductController);
 //category wise product
 router.get("/product-category/:slug", productCategoryController);
 
+//update product quantity
+router.put('/update-quantity',requireSignIn,isAdmin, updateProductQuantity);
 
 
 export default router;

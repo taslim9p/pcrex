@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 function AdminMenu() {
   return (
     <>
-      <div className="sidebar">
+      <div className="sidebar h-full">
         <h1 className="text-lg underline text-center mt-3 mb-3">
           Admin Dashboard
         </h1>

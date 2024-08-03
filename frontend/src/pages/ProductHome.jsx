@@ -11,6 +11,7 @@ function ProductHome() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [cart, setCart] = useCart();
+  console.log(products);
 
   const getTotal = async () => {
     try {
@@ -18,10 +19,20 @@ function ProductHome() {
         `${import.meta.env.VITE_API}/api/v1/product/product-count`
       );
       setTotal(data?.total);
-      console.log(data.total);
+      
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleCart = (product) => {
+    console.log(product); // Log `product` to ensure it contains all necessary properties
+    setCart(prevCart => {
+      const updatedCart = [...prevCart, product];
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      return updatedCart;
+    });
+    toast.success(`${product.name} added to cart`);
   };
 
   useEffect(() => {
@@ -103,12 +114,14 @@ function ProductHome() {
               >
                 Show Details
               </Link>
+              {console.log(p)}
               <button
-                onClick={() => {
-                  setCart([...cart, p]);
-                  localStorage.setItem("cart", JSON.stringify([...cart, p]));
-                  toast.success(`${p.name} added to cart`);
-                }}
+                // onClick={() => {
+                //   setCart([...cart, p]);
+                //   localStorage.setItem("cart", JSON.stringify([...cart, p]));
+                //   toast.success(`${p.name} added to cart`);
+                // }}
+                onClick={()=>{handleCart(p)}}
                 // className="bg-green-500 text-white px-2 py-1 rounded"
                 className="rounded  px-2 py-1 text-white"
                 style={{background:

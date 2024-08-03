@@ -22,16 +22,19 @@ import { Route, Routes } from "react-router-dom";
 import CartPage from "./pages/CartPage";
 import Reg from "./pages/auth/Reg.jsx";
 import AdminOrders from "./pages/admin/AdminOrders";
+import AdminHub from "./pages/admin/AdminHub";
 
 // import Car from "./components/carousell/Car";
 
 export default function App() {
+  
   return (
    
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/search" element={<Searchfunc/>} />
         <Route path="/product/:slug" element={<ProductDetail/>} />
+
         <Route path="/category/:slug" element={<CategoryDetail/>} />
         <Route path="/cart" element={<CartPage/>} />
 
@@ -49,6 +52,8 @@ export default function App() {
           <Route path="admin/create-product" element={<CreateProduct />} />
           <Route path="admin/product/:slug" element={<UpdateProduct />} />
           <Route path="admin/orders" element={<AdminOrders/>} />
+        <Route path="admin/ad" element={<AdminHub/>} />
+
           <Route path="admin/products" element={<Products />} />
           <Route path="admin/users" element={<Users />} />
         </Route>

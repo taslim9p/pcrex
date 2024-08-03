@@ -29,7 +29,8 @@ function Products() {
   return (
     <Layout title={"Dashboard - All Products"}>
       <div className="flex flex-col lg:flex-row gap-4 p-4">
-        <div className="lg:w-1/5">
+        
+        <div className="col-span-1">
           <AdminMenu />
         </div>
         <div className="lg:w-4/5">

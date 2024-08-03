@@ -101,8 +101,8 @@ function CreateCategory() {
 
   return (
     <Layout title={"Dashboard - Create Category"}>
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 p-4">
-        <div className="lg:col-span-1">
+      <div className="grid grid-cols-5 gap-4">
+        <div className="col-span-1">
           <AdminMenu />
         </div>
         <div className="col-span-4 ml-8 mr-8">

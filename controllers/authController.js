@@ -220,7 +220,9 @@ export const getOrdersController = async (req, res) => {
       .find({ buyer: req.user._id })
       .populate("products", "-photo")
       .populate("buyer", "name");
+ 
     res.json(orders);
+    
   } catch (error) {
     console.log(error);
     res.status(500).send({
@@ -236,7 +238,8 @@ export const getOrdersController = async (req, res) => {
 export const saveAllOrders = async (req, res) => {
   try {
     const { cart } = req.body;
-    
+  
+
     // Check if cart data is provided
     if (!cart || cart.length === 0) {
       return res.status(400).json({ success: false, message: "Cart is empty" });
@@ -244,10 +247,15 @@ export const saveAllOrders = async (req, res) => {
 
     // Create new order
     const order = new orderModel({
+      
       products: cart,
       buyer: req.user._id,
       status: "Not Process", 
     });
+
+    console.log(order);
+    // console.log(order.products);
+
 
     // Save the order to the database
     await order.save();
@@ -271,6 +279,7 @@ export const getAllOrdersController = async (req, res) => {
       .populate("products", "-photo")
       .populate("buyer", "name")
       .sort({ createdAt: -1 }); // Corrected sort value
+      // console.log("orders");
     res.json(orders);
   } catch (error) {
     console.log(error);
@@ -321,5 +330,34 @@ export const cancelOrder = async (req, res) => {
     res.status(200).json({ message: "Order cancelled successfully", order });
   } catch (error) {
     res.status(500).json({ message: "Error cancelling order", error });
+  }
+};
+
+
+//get all userData
+
+export const getAllUserData = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    const user = await userModel.findById(user_id);
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+    
+    res.status(200).send({
+      success: true,
+      message: "User data retrieved successfully",
+      user,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error while getting user data",
+      error,
+    });
   }
 };

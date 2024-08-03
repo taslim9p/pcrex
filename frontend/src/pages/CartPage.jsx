@@ -7,6 +7,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 import Layout from "../components/layout/Layout";
+import Quant from "../components/Quant";
 
 const CartPage = () => {
   const [auth, setAuth] = useAuth();
@@ -52,6 +53,7 @@ const CartPage = () => {
         cart,
       });
       
+      
       if (data.success) {
         setLoading(false);
         localStorage.removeItem("cart");
@@ -68,6 +70,7 @@ const CartPage = () => {
     }
   };
   
+
   return (
     <Layout>
       <div className="cart-page">
@@ -93,6 +96,8 @@ const CartPage = () => {
                   className="flex items-center card m-4 p-4 bg-white shadow-md rounded-lg"
                   key={p._id}
                 >
+ 
+
                   <div className="w-3/12">
                     <img
                       src={`${import.meta.env.VITE_API}/api/v1/product/product-photo/${p._id}`}
@@ -107,6 +112,9 @@ const CartPage = () => {
                     </p>
                     <p className="text-gray-700">Price: &#8377;{p.price}</p>
                   </div>
+                  {/* {console.log(_id)} */}
+                  
+                  <div><Quant quant={p.quant} productId={p._id} maxQuant={p.quantity}/></div>
                   <div className="w-3/12 flex justify-end">
                     <button
                       className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"

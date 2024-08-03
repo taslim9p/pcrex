@@ -12,6 +12,7 @@ function Profile() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  console.log(uname);
 
   useEffect(() => {
     const { uname, email, phone, address } = auth?.user || {};
@@ -20,6 +21,7 @@ function Profile() {
     setPhone(phone || "");
     setAddress(address || "");
   }, [auth?.user]);
+  console.log(auth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,10 +34,7 @@ function Profile() {
         address,
       });
 
-
       if (data?.error) {
-
-
         toast.error(data?.error);
       } else {
         setAuth({ ...auth, user: data?.updateUser });
@@ -82,6 +81,7 @@ function Profile() {
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled
               />
               <input
                 type="tel"

@@ -299,5 +299,23 @@ export const productCategoryController = async (req, res) => {
   }
 };
 
+//update product quantity when it deleverd to customer
+
+export const updateProductQuantity = async (req, res) => {
+  try {
+    const { productId, quantityPurchased } = req.body;
+    const product = await productModel.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    product.quantity -= quantityPurchased; // Subtract the purchased quantity from the product's available quantity
+    await product.save();
+    res.status(200).json({ message: 'Product quantity updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to update product quantity' });
+  }
+};
+
 
 

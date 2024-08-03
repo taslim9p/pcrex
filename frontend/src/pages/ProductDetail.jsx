@@ -4,6 +4,7 @@ import Layout from "../components/layout/Layout";
 import axios from "axios";
 import { useCart } from "../context/cart";
 import { toast } from "react-hot-toast";
+import Quant from "../components/Quant";
 
 function ProductDetail() {
   const params = useParams();
@@ -44,12 +45,14 @@ function ProductDetail() {
       console.log(error);
     }
   };
+ 
 
   return (
     <Layout>
       <div className="container mx-auto py-8" key={product._id}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="flex justify-center">
+          
             <img
               src={`${import.meta.env.VITE_API}/api/v1/product/product-photo/${
                 product._id
@@ -67,7 +70,11 @@ function ProductDetail() {
             <h6 className="mb-2">Name: {product.name}</h6>
             <h6 className="mb-2 mr-5">Description: {product.description}</h6>
             <h6 className="mb-2">Price:&#8377;{product.price}</h6>
-            <h6 className="mb-2">Category: {product?.category?.name}</h6>
+            <h6 className="mb-2">Price:&#8377;{product.Quant}</h6>
+
+            {/* <h6 className="mb-2">Category: {product?.category?.name}</h6> */}
+
+            
 
             <button
               onClick={() => {

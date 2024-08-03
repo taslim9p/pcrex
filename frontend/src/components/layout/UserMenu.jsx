@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 function UserMenu() {
   return (
-    <div className="bg-gradient-to-r from-blue-300 to-teal-300 p-4 w-full max-w-xs min-h-screen text-white flex flex-col">
+    <div className="bg-gradient-to-r from-blue-300 h-full to-teal-300 p-4 w-full max-w-xs min-h-screen text-white flex flex-col">
       <h1 className="text-lg font-bold underline text-center mb-4">
         Dashboard
       </h1>
