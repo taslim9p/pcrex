@@ -1,8 +1,10 @@
 import { comparePassword, hashPassword } from "../helper/authHelper.js";
 import userModel from "../models/userModel.js";
 import orderModel from "../models/orderModel.js";
+import mongoose from "mongoose";
 
 import JWT from "jsonwebtoken";
+import { sendVerifyMail } from "../config/sendMail.js";
 
 export const registerController = async (req, res) => {
   try {
@@ -48,6 +50,8 @@ export const registerController = async (req, res) => {
       answer,
     }).save();
 
+    sendVerifyMail(email, user._id, uname);
+
     await res.status(201).send({
       success: true,
       message: "user Register Successfully",
@@ -80,36 +84,45 @@ export const loginController = async (req, res) => {
 
     //check user
     const user = await userModel.findOne({ email });
+
     if (!user) {
       return res.status(400).send({
         success: false,
         message: "Email is not register:",
       });
     }
-    const match = await comparePassword(password, user.password);
-    if (!match) {
-      return res.status(404).send({
+    if (user.isVerified === 1) {
+      const match = await comparePassword(password, user.password);
+      if (!match) {
+        return res.status(404).send({
+          success: false,
+          message: "password is incorrect",
+        });
+      }
+      //token
+      const token = JWT.sign({ _id: user.id }, process.env.JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.status(200).send({
+        success: true,
+        message: "login successfully",
+        user: {
+          _id: user._id,
+          name: user.uname,
+          email: user.email,
+          phone: user.phone,
+          address: user.address,
+          role: user.role,
+        },
+        token,
+      });
+    } else {
+      sendVerifyMail(email, user._id, user.uname);
+      return res.status(400).send({
         success: false,
-        message: "password is incorrect",
+        message: "Check your Email For Verification",
       });
     }
-    //token
-    const token = await JWT.sign({ _id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
-    res.status(200).send({
-      success: true,
-      message: "login successfully",
-      user: {
-        _id: user._id,
-        name: user.uname,
-        email: user.email,
-        phone: user.phone,
-        address: user.address,
-        role: user.role,
-      },
-      token,
-    });
   } catch (error) {
     console.log(error);
     res.status(500).send({
@@ -132,8 +145,8 @@ export const forgotPasswordController = async (req, res) => {
     }
     if (!newPassword) {
       res.status(400).send({ message: "newPassword  is reuired" });
-    }  
-  
+    }
+
     //check credentials
     const user = await userModel.findOne({ email, answer });
 
@@ -166,7 +179,6 @@ export const testController = (req, res) => {
 
 //update profile
 
-
 // Update profile
 // Update profile controller
 export const updatedProfileController = async (req, res) => {
@@ -182,7 +194,9 @@ export const updatedProfileController = async (req, res) => {
     }
 
     // Hash the new password if provided
-    const hashedPassword = password ? await hashPassword(password) : user.password;
+    const hashedPassword = password
+      ? await hashPassword(password)
+      : user.password;
 
     // Update the user data
     const updateUser = await userModel.findByIdAndUpdate(
@@ -211,18 +225,15 @@ export const updatedProfileController = async (req, res) => {
   }
 };
 
-
 //orders
 export const getOrdersController = async (req, res) => {
-   
   try {
     const orders = await orderModel
       .find({ buyer: req.user._id })
       .populate("products", "-photo")
       .populate("buyer", "name");
- 
+
     res.json(orders);
-    
   } catch (error) {
     console.log(error);
     res.status(500).send({
@@ -238,7 +249,6 @@ export const getOrdersController = async (req, res) => {
 export const saveAllOrders = async (req, res) => {
   try {
     const { cart } = req.body;
-  
 
     // Check if cart data is provided
     if (!cart || cart.length === 0) {
@@ -247,15 +257,13 @@ export const saveAllOrders = async (req, res) => {
 
     // Create new order
     const order = new orderModel({
-      
       products: cart,
       buyer: req.user._id,
-      status: "Not Process", 
+      status: "Not Process",
     });
 
     console.log(order);
     // console.log(order.products);
-
 
     // Save the order to the database
     await order.save();
@@ -270,7 +278,6 @@ export const saveAllOrders = async (req, res) => {
   }
 };
 
-
 //All-orders
 export const getAllOrdersController = async (req, res) => {
   try {
@@ -279,7 +286,7 @@ export const getAllOrdersController = async (req, res) => {
       .populate("products", "-photo")
       .populate("buyer", "name")
       .sort({ createdAt: -1 }); // Corrected sort value
-      // console.log("orders");
+    // console.log("orders");
     res.json(orders);
   } catch (error) {
     console.log(error);
@@ -290,7 +297,6 @@ export const getAllOrdersController = async (req, res) => {
     });
   }
 };
-
 
 //order status
 export const orderStatusController = async (req, res) => {
@@ -313,7 +319,6 @@ export const orderStatusController = async (req, res) => {
   }
 };
 
-
 //cancel order
 export const cancelOrder = async (req, res) => {
   try {
@@ -333,7 +338,6 @@ export const cancelOrder = async (req, res) => {
   }
 };
 
-
 //get all userData
 
 export const getAllUserData = async (req, res) => {
@@ -346,7 +350,7 @@ export const getAllUserData = async (req, res) => {
         message: "User not found",
       });
     }
-    
+
     res.status(200).send({
       success: true,
       message: "User data retrieved successfully",
@@ -359,5 +363,39 @@ export const getAllUserData = async (req, res) => {
       message: "Error while getting user data",
       error,
     });
+  }
+};
+
+//varify MAil
+
+export const verifyMail = async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).send({ error: "Token is required" });
+    }
+
+    const user = await userModel.findOne({
+      verificationToken: token,
+      verificationTokenExpires: { $gt: Date.now() }, // Check if the token is not expired
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .send({ error: "Verification token is invalid or has expired" });
+    }
+
+    // Verify the user
+    user.isVerified = 1;
+    user.verificationToken = undefined; // Remove the token
+    user.verificationTokenExpires = undefined; // Remove the expiration time
+    await user.save();
+
+    res.render("emailVerified");
+  } catch (error) {
+    console.error("Error during email verification:", error);
+    res.status(500).send({ error: "Internal server error" });
   }
 };
