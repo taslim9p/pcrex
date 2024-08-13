@@ -8,7 +8,7 @@ import { sendVerifyMail } from "../config/sendMail.js";
 
 export const registerController = async (req, res) => {
   try {
-    const { uname, email, password, phone, address, answer } = req.body;
+    const { uname, email, password, phone, address,address2, answer } = req.body;
     if (!uname) {
       return res.send({ message: "name is required" });
     }
@@ -48,6 +48,7 @@ export const registerController = async (req, res) => {
       address,
       password: hashedPassword,
       answer,
+      address2,
     }).save();
 
     sendVerifyMail(email, user._id, uname);
@@ -183,7 +184,7 @@ export const testController = (req, res) => {
 // Update profile controller
 export const updatedProfileController = async (req, res) => {
   try {
-    const { uname, email, password, address, phone } = req.body;
+    const { name, email, password, address, phone } = req.body;
     const user = await userModel.findById(req.user._id);
 
     // Check if the password is provided and its length is at least 6 characters
@@ -202,7 +203,7 @@ export const updatedProfileController = async (req, res) => {
     const updateUser = await userModel.findByIdAndUpdate(
       req.user._id,
       {
-        uname: uname || user.uname,
+        uname: name || user.uname,
         password: hashedPassword,
         phone: phone || user.phone,
         address: address || user.address,

@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema(
       type: {},
       required: true,
     },
+    address2: {
+      type: {},
+      
+    },
     answer: {
       type: String,
       required: true,
